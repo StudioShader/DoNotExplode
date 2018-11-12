@@ -9,9 +9,8 @@ public class CellController : MonoBehaviour {
     private Coordinate playerCoordinate;
     public int maxPolyminoLength = 4;
     public static List<Polymino> polyminos = new List<Polymino>();
-    public static Cell[,] cells = new Cell[100,100];
 
-    public static List<Cell> Cells = new List<Cell>();
+    public static List<Cell> cells = new List<Cell>();
 
     [SerializeField]
     private float density;
@@ -29,11 +28,11 @@ public class CellController : MonoBehaviour {
         GameObject cell1 = PoolScript.instance.GetObjectFromPool("Cell", Vector3.zero, Quaternion.Euler(0, 0, 0));
         CellSize = cell1.GetComponent<BoxCollider2D>().size.x;
         PoolScript.instance.ReturnObjectToPool(cell1);
-
-        Cells.Add(new Cell(1, 1));
-        Cells.Add(new Cell(1, 2));
-        Cells.Add(new Cell(2, 1));
-        Cells.Add(new Cell(2, 2));
+        new Cell(1, 1);
+        new Cell(1, 2);
+        new Cell(2, 1);
+        new Cell(2, 2);
+        Debug.Log(Find(new Coordinate(2, 1)));
         //GeneratePlate(plate1 = new Coordinate(0, 0));
         //GeneratePlate(plate2 = new Coordinate(-plate.x, 0));
         //GeneratePlate(plate3 = new Coordinate(-plate.x, -plate.x));
@@ -86,17 +85,25 @@ public class CellController : MonoBehaviour {
             }
         }
     }
-    //public void InitializeCellMass(int n)    this is a bad cause this is a list but not a mass
-    //{
-    //    for (int j = -n; j < n; j++)
-    //    {
-    //        cells.Add(new List<Cell>());
-    //        for (int k = -n; k < n; k++)
-    //        {
-    //            cells[j].Add(new Cell(j, k));
-    //        }
-    //    }
-    //}
+    public static Cell Find(Coordinate coord)
+    {
+        Cell outCell = null;
+        foreach(Cell cell in cells)
+        {
+            if (cell.Coordinate.Equals(coord))
+            {
+                outCell = cell;
+            }
+        }
+        if (outCell != null) return outCell; else return null;
+    }
+    public void DebugList(List<Cell> list)
+    {
+        foreach(Cell cell in list)
+        {
+            Debug.Log(cell.Coordinate.x + "   "  + cell.Coordinate.y);
+        }
+    }
     public void GeneratePlate(Coordinate _plate)
     {
         float densityOfPlate = 0;

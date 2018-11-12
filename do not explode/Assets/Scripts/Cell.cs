@@ -16,7 +16,7 @@ public class Cell {
         Position = new Vector2(coord.x * CellController.CellSize + CellController.CellSize/2, coord.y * CellController.CellSize + CellController.CellSize / 2);
         cell = PoolScript.instance.GetObjectFromPool("Cell", Position, Quaternion.Euler(0, 0, 0));
         cell.transform.parent = CellController.instance.transform;
-        CellController.cells[coord.x,coord.y] = this;
+        CellController.cells.Add(this);
     }
     public Cell(int X, int Y)
     {
@@ -26,7 +26,7 @@ public class Cell {
         Position = new Vector2(coord.x * CellController.CellSize + CellController.CellSize / 2, coord.y * CellController.CellSize + CellController.CellSize / 2);
         cell = PoolScript.instance.GetObjectFromPool("Cell", Position, Quaternion.Euler(0, 0, 0));
         cell.transform.parent = CellController.instance.transform;
-        CellController.cells[X, Y] = this;
+        CellController.cells.Add(this);
     }
     public Cell(int X, int Y, bool empty)
     {
@@ -37,6 +37,7 @@ public class Cell {
             Coordinate = coord;
             cell = null;
             Position = new Vector2();
+            CellController.cells.Add(this);
         }
         else
         {
@@ -46,13 +47,13 @@ public class Cell {
             Position = new Vector2(coord.x * CellController.CellSize + CellController.CellSize / 2, coord.y * CellController.CellSize + CellController.CellSize / 2);
             cell = PoolScript.instance.GetObjectFromPool("Cell", Position, Quaternion.Euler(0, 0, 0));
             cell.transform.parent = CellController.instance.transform;
-            CellController.cells[X, Y] = this;
+            CellController.cells.Add(this);
         }
 
     }
     public void del()
     {
-        CellController.cells[Coordinate.x, Coordinate.y] = null;
+        CellController.cells.Remove(CellController.Find(Coordinate));
         PoolScript.instance.ReturnObjectToPool(cell);
     }
 }
@@ -88,6 +89,12 @@ public class Coordinate
             }
         }
         return new Coordinate(_x, _y);
+    }
+    public bool Equals(Coordinate _coord)
+    {
+        if (_coord == null) return false;
+        if (_coord.x == x && _coord.y == y) return true;
+        return false;
     }
 }
 
