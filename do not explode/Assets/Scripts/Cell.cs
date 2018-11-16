@@ -5,55 +5,124 @@ using UnityEngine;
 
 public class Cell {
     public GameObject cell;
-    public bool empty;
+    public int empty;
     public Vector2 Position { get; set; }
     public Coordinate Coordinate { get; set; }
 
     public Cell(Coordinate coord)
     {
-        empty = false;
-        Coordinate = coord;
-        Position = new Vector2(coord.x * CellController.CellSize + CellController.CellSize/2, coord.y * CellController.CellSize + CellController.CellSize / 2);
-        cell = PoolScript.instance.GetObjectFromPool("Cell", Position, Quaternion.Euler(0, 0, 0));
-        cell.transform.parent = CellController.instance.transform;
-        CellController.cells.Add(this);
-    }
-    public Cell(int X, int Y)
-    {
-        empty = false;
-        Coordinate coord = new Coordinate(X, Y);
-        Coordinate = coord;
-        Position = new Vector2(coord.x * CellController.CellSize + CellController.CellSize / 2, coord.y * CellController.CellSize + CellController.CellSize / 2);
-        cell = PoolScript.instance.GetObjectFromPool("Cell", Position, Quaternion.Euler(0, 0, 0));
-        cell.transform.parent = CellController.instance.transform;
-        CellController.cells.Add(this);
-    }
-    public Cell(int X, int Y, bool empty)
-    {
-        if (empty)
+        if (CellController.FindCell(coord) != null)
         {
-            empty = true;
-            Coordinate coord = new Coordinate(X, Y);
-            Coordinate = coord;
-            cell = null;
-            Position = new Vector2();
-            CellController.cells.Add(this);
+            Cell alreadyCell = CellController.FindCell(coord);
+            if (alreadyCell.empty == -1)
+            {
+                alreadyCell.del();
+                empty = -1;
+                Coordinate = coord;
+                Position = new Vector2(coord.x * CellController.CellSize + CellController.CellSize / 2, coord.y * CellController.CellSize + CellController.CellSize / 2);
+                cell = PoolScript.instance.GetObjectFromPool("Cell", Position, Quaternion.Euler(0, 0, 0));
+                cell.transform.parent = CellController.instance.transform;
+                CellController.cells.Add(this);
+            }
         }
         else
         {
-            empty = false;
-            Coordinate coord = new Coordinate(X, Y);
+            empty = -1;
             Coordinate = coord;
             Position = new Vector2(coord.x * CellController.CellSize + CellController.CellSize / 2, coord.y * CellController.CellSize + CellController.CellSize / 2);
             cell = PoolScript.instance.GetObjectFromPool("Cell", Position, Quaternion.Euler(0, 0, 0));
             cell.transform.parent = CellController.instance.transform;
             CellController.cells.Add(this);
         }
+    }
+    public Cell(int X, int Y)
+    {
+        Coordinate coord = new Coordinate(X, Y);
+        if (CellController.FindCell(coord) != null)
+        {
+            Cell alreadyCell = CellController.FindCell(coord);
+            if (alreadyCell.empty == -1)
+            {
+                alreadyCell.del();
+                empty = -1;
+                Coordinate = coord;
+                Position = new Vector2(coord.x * CellController.CellSize + CellController.CellSize / 2, coord.y * CellController.CellSize + CellController.CellSize / 2);
+                cell = PoolScript.instance.GetObjectFromPool("Cell", Position, Quaternion.Euler(0, 0, 0));
+                cell.transform.parent = CellController.instance.transform;
+                CellController.cells.Add(this);
+            }
+        }
+        else
+        {
+            empty = -1;
+            Coordinate = coord;
+            Position = new Vector2(coord.x * CellController.CellSize + CellController.CellSize / 2, coord.y * CellController.CellSize + CellController.CellSize / 2);
+            cell = PoolScript.instance.GetObjectFromPool("Cell", Position, Quaternion.Euler(0, 0, 0));
+            cell.transform.parent = CellController.instance.transform;
+            CellController.cells.Add(this);
+        }
+    }
+    public Cell(int X, int Y, int _empty)
+    {
+        Debug.Log(X + "  " + Y);
+        if (CellController.FindCell(new Coordinate(X, Y)) != null)
+        {
+            Cell alreadyCell = CellController.FindCell(new Coordinate(X, Y));
+            if (alreadyCell.empty == -1)
+            {
+                alreadyCell.del();
 
+                if (_empty == 0)
+                {
+                    empty = 0;
+                    Coordinate coord = new Coordinate(X, Y);
+                    Coordinate = coord;
+                    cell = null;
+                    Position = new Vector2();
+                    CellController.cells.Add(this);
+                }
+                else
+                {
+                    empty = 1;
+                    Coordinate coord = new Coordinate(X, Y);
+                    Coordinate = coord;
+                    Position = new Vector2(coord.x * CellController.CellSize + CellController.CellSize / 2, coord.y * CellController.CellSize + CellController.CellSize / 2);
+                    cell = PoolScript.instance.GetObjectFromPool("Cell", Position, Quaternion.Euler(0, 0, 0));
+                    cell.transform.parent = CellController.instance.transform;
+                    CellController.cells.Add(this);
+                }
+            }
+            else
+            {
+                Debug.Log("alert: interseption between two empty cells  " + X + "  " + Y);
+            }
+        }
+        else
+        {
+            if (_empty == 0)
+            {
+                empty = 0;
+                Coordinate coord = new Coordinate(X, Y);
+                Coordinate = coord;
+                cell = null;
+                Position = new Vector2();
+                CellController.cells.Add(this);
+            }
+            else
+            {
+                empty = 1;
+                Coordinate coord = new Coordinate(X, Y);
+                Coordinate = coord;
+                Position = new Vector2(coord.x * CellController.CellSize + CellController.CellSize / 2, coord.y * CellController.CellSize + CellController.CellSize / 2);
+                cell = PoolScript.instance.GetObjectFromPool("Cell", Position, Quaternion.Euler(0, 0, 0));
+                cell.transform.parent = CellController.instance.transform;
+                CellController.cells.Add(this);
+            }
+        }
     }
     public void del()
     {
-        CellController.cells.Remove(CellController.Find(Coordinate));
+        CellController.cells.Remove(CellController.FindCell(Coordinate));
         PoolScript.instance.ReturnObjectToPool(cell);
     }
 }

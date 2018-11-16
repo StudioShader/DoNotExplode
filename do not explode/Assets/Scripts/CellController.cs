@@ -9,11 +9,13 @@ public class CellController : MonoBehaviour {
     private Coordinate playerCoordinate;
     public int maxPolyminoLength = 4;
     public static List<Polymino> polyminos = new List<Polymino>();
-
+    public int direction = 1, predirection = 2;
     public static List<Cell> cells = new List<Cell>();
 
     [SerializeField]
     private float density;
+
+    public Cell lastCell;
 
     public Coordinate plate, plate1, plate2, plate3, plate4;
 
@@ -28,16 +30,14 @@ public class CellController : MonoBehaviour {
         GameObject cell1 = PoolScript.instance.GetObjectFromPool("Cell", Vector3.zero, Quaternion.Euler(0, 0, 0));
         CellSize = cell1.GetComponent<BoxCollider2D>().size.x;
         PoolScript.instance.ReturnObjectToPool(cell1);
-        new Cell(1, 1);
-        new Cell(1, 2);
-        new Cell(2, 1);
-        new Cell(2, 2);
-        Debug.Log(Find(new Coordinate(2, 1)));
-        //GeneratePlate(plate1 = new Coordinate(0, 0));
-        //GeneratePlate(plate2 = new Coordinate(-plate.x, 0));
-        //GeneratePlate(plate3 = new Coordinate(-plate.x, -plate.x));
-        //GeneratePlate(plate4 = new Coordinate(0, -plate.x));
-
+        GeneratePlate(plate1 = new Coordinate(0, 0));
+        GeneratePlate(plate2 = new Coordinate(-plate.x, 0));
+        GeneratePlate(plate3 = new Coordinate(-plate.x, -plate.x));
+        GeneratePlate(plate4 = new Coordinate(0, -plate.x));
+        cells.Add(new Cell(0, 0));
+        cells.Add(new Cell(1, 0, 1));
+        lastCell = FindCell(new Coordinate(1, 0));
+        WhitePathFirstGen(3);
     }
 
     public void Update()
@@ -48,10 +48,168 @@ public class CellController : MonoBehaviour {
     }
     public void WhitePathFirstGen(int n)
     {
-        //for (int i )
-        //{
-
-        //}
+        int cellCount = 0;
+        while(cellCount < n)
+        {
+            int localLength = DetermineLineLength();
+            Debug.Log("localLength = " + localLength + " direction  = " + direction + "   predirection =    " + predirection);
+            cellCount += localLength;
+            switch (direction)
+            {
+                case 1:
+                    if (predirection == 4) {
+                        while (localLength > 1)
+                        {
+                            localLength -= 2;
+                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1, 0));
+                            cells.Add(new Cell(lastCell.Coordinate.x, lastCell.Coordinate.y + 1, 0));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1));
+                        }
+                        if (localLength == 1)
+                        {
+                            cells.Add(new Cell(lastCell.Coordinate.x, lastCell.Coordinate.y + 1, 0));
+                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1, 1));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1));
+                        }
+                        else
+                        {
+                            cells.Add(new Cell(lastCell.Coordinate.x, lastCell.Coordinate.y + 1, 1));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x, lastCell.Coordinate.y + 1));
+                        }
+                    }
+                    else
+                    {
+                        while (localLength > 1)
+                        {
+                            localLength -= 2;
+                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1, 0));
+                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y, 0));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1));
+                        }
+                        if (localLength == 1)
+                        {
+                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y, 0));
+                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1, 1));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1));
+                        }
+                        else
+                        {
+                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y, 1));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x + 1, lastCell.Coordinate.y));
+                        }
+                    }
+                    break;
+                case 2:
+                    if (predirection == 1)
+                    {
+                        while (localLength > 1)
+                        {
+                            localLength -= 2;
+                            cells.Add(new Cell(lastCell.Coordinate.x - 1, lastCell.Coordinate.y, 0));
+                            cells.Add(new Cell(lastCell.Coordinate.x - 1, lastCell.Coordinate.y + 1, 0));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x - 1, lastCell.Coordinate.y + 1));
+                        }
+                        if (localLength == 1)
+                        {
+                            cells.Add(new Cell(lastCell.Coordinate.x - 1, lastCell.Coordinate.y, 0));
+                            cells.Add(new Cell(lastCell.Coordinate.x - 1, lastCell.Coordinate.y + 1, 1));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x - 1, lastCell.Coordinate.y + 1));
+                        }
+                        else
+                        {
+                            cells.Add(new Cell(lastCell.Coordinate.x - 1, lastCell.Coordinate.y, 1));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x - 1, lastCell.Coordinate.y));
+                        }
+                    }
+                    else
+                    {
+                        while (localLength > 1)
+                        {
+                            localLength -= 2;
+                            cells.Add(new Cell(lastCell.Coordinate.x, lastCell.Coordinate.y + 1, 0));
+                            cells.Add(new Cell(lastCell.Coordinate.x - 1, lastCell.Coordinate.y + 1, 0));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x - 1, lastCell.Coordinate.y + 1));
+                        }
+                        if (localLength == 1)
+                        {
+                            cells.Add(new Cell(lastCell.Coordinate.x, lastCell.Coordinate.y + 1, 0));
+                            cells.Add(new Cell(lastCell.Coordinate.x - 1, lastCell.Coordinate.y + 1, 1));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x - 1, lastCell.Coordinate.y + 1));
+                        }
+                        else
+                        {
+                            cells.Add(new Cell(lastCell.Coordinate.x, lastCell.Coordinate.y + 1, 1));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x, lastCell.Coordinate.y + 1));
+                        }
+                    }
+                    break;
+                case 3:
+                    if (predirection == 2)
+                    {
+                        while (localLength > 1)
+                        {
+                            localLength -= 2;
+                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1, 0));
+                            cells.Add(new Cell(lastCell.Coordinate.x, lastCell.Coordinate.y + 1, 0));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1));
+                        }
+                        if (localLength == 1)
+                        {
+                            cells.Add(new Cell(lastCell.Coordinate.x, lastCell.Coordinate.y + 1, 0));
+                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1, 1));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1));
+                        }
+                        else
+                        {
+                            cells.Add(new Cell(lastCell.Coordinate.x, lastCell.Coordinate.y + 1, 1));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x, lastCell.Coordinate.y + 1));
+                        }
+                    }
+                    else
+                    {
+                        while (localLength > 1)
+                        {
+                            localLength -= 2;
+                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1, 0));
+                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y, 0));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1));
+                        }
+                        if (localLength == 1)
+                        {
+                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y, 0));
+                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1, 1));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1));
+                        }
+                        else
+                        {
+                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y, 1));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x + 1, lastCell.Coordinate.y));
+                        }
+                    }
+                    break;
+            }
+            if (direction == 1 && localLength % 2 == 1 || direction == 3 && localLength % 2 == 0) 
+            {
+                direction = 2;
+            }else
+            if (direction == 1 && localLength%2 == 0 || direction == 3 && localLength % 2 == 1)
+            {
+                direction = 4;
+            }else
+            if (direction == 2 && localLength%2 == 1 || direction == 4 && localLength % 2 == 1)
+            {
+                direction = 1;
+            }else
+            if (direction == 2 && localLength % 2 == 0 || direction == 4 && localLength % 2 == 0)
+            {
+                direction = 3;
+            }
+        }
+    }
+    public int DetermineLineLength()
+    {
+        int localLength = Random.Range(1, 5);
+        return localLength;
     }
     public void PlateGeneration()
     {
@@ -85,9 +243,10 @@ public class CellController : MonoBehaviour {
             }
         }
     }
-    public static Cell Find(Coordinate coord)
+    public static Cell FindCell(Coordinate coord)
     {
         Cell outCell = null;
+        //Debug.Log(cells.Count);
         foreach(Cell cell in cells)
         {
             if (cell.Coordinate.Equals(coord))
