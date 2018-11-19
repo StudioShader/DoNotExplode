@@ -37,7 +37,7 @@ public class CellController : MonoBehaviour {
         cells.Add(new Cell(0, 0));
         cells.Add(new Cell(1, 0, 1));
         lastCell = FindCell(new Coordinate(1, 0));
-        WhitePathFirstGen(3);
+        WhitePathFirstGen(10);
     }
 
     public void Update()
@@ -149,20 +149,20 @@ public class CellController : MonoBehaviour {
                         while (localLength > 1)
                         {
                             localLength -= 2;
-                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1, 0));
-                            cells.Add(new Cell(lastCell.Coordinate.x, lastCell.Coordinate.y + 1, 0));
-                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1));
+                            cells.Add(new Cell(lastCell.Coordinate.x - 1, lastCell.Coordinate.y - 1, 0));
+                            cells.Add(new Cell(lastCell.Coordinate.x, lastCell.Coordinate.y - 1, 0));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x - 1, lastCell.Coordinate.y - 1));
                         }
                         if (localLength == 1)
                         {
-                            cells.Add(new Cell(lastCell.Coordinate.x, lastCell.Coordinate.y + 1, 0));
-                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1, 1));
-                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1));
+                            cells.Add(new Cell(lastCell.Coordinate.x, lastCell.Coordinate.y - 1, 0));
+                            cells.Add(new Cell(lastCell.Coordinate.x - 1, lastCell.Coordinate.y - 1, 1));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x - 1, lastCell.Coordinate.y - 1));
                         }
                         else
                         {
-                            cells.Add(new Cell(lastCell.Coordinate.x, lastCell.Coordinate.y + 1, 1));
-                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x, lastCell.Coordinate.y + 1));
+                            cells.Add(new Cell(lastCell.Coordinate.x - 1, lastCell.Coordinate.y, 1));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x - 1, lastCell.Coordinate.y));
                         }
                     }
                     else
@@ -170,15 +170,38 @@ public class CellController : MonoBehaviour {
                         while (localLength > 1)
                         {
                             localLength -= 2;
-                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1, 0));
-                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y, 0));
+                            cells.Add(new Cell(lastCell.Coordinate.x - 1, lastCell.Coordinate.y - 1, 0));
+                            cells.Add(new Cell(lastCell.Coordinate.x - 1, lastCell.Coordinate.y, 0));
                             lastCell = FindCell(new Coordinate(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1));
                         }
                         if (localLength == 1)
                         {
+                            cells.Add(new Cell(lastCell.Coordinate.x - 1, lastCell.Coordinate.y, 0));
+                            cells.Add(new Cell(lastCell.Coordinate.x - 1, lastCell.Coordinate.y - 1, 1));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x - 1, lastCell.Coordinate.y - 1));
+                        }
+                        else
+                        {
+                            cells.Add(new Cell(lastCell.Coordinate.x - 1, lastCell.Coordinate.y, 1));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x - 1, lastCell.Coordinate.y));
+                        }
+                    }
+                    break;
+                case 4:
+                    if (predirection == 3)
+                    {
+                        while (localLength > 1)
+                        {
+                            localLength -= 2;
+                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y - 1, 0));
                             cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y, 0));
-                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1, 1));
-                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x + 1, lastCell.Coordinate.y + 1));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x + 1, lastCell.Coordinate.y - 1));
+                        }
+                        if (localLength == 1)
+                        {
+                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y, 0));
+                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y - 1, 1));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x + 1, lastCell.Coordinate.y - 1));
                         }
                         else
                         {
@@ -186,24 +209,51 @@ public class CellController : MonoBehaviour {
                             lastCell = FindCell(new Coordinate(lastCell.Coordinate.x + 1, lastCell.Coordinate.y));
                         }
                     }
+                    else
+                    {
+                        while (localLength > 1)
+                        {
+                            localLength -= 2;
+                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y - 1, 0));
+                            cells.Add(new Cell(lastCell.Coordinate.x, lastCell.Coordinate.y - 1, 0));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x + 1, lastCell.Coordinate.y - 1));
+                        }
+                        if (localLength == 1)
+                        {
+                            cells.Add(new Cell(lastCell.Coordinate.x + 1, lastCell.Coordinate.y - 1, 0));
+                            cells.Add(new Cell(lastCell.Coordinate.x, lastCell.Coordinate.y - 1, 1));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x + 1, lastCell.Coordinate.y - 1));
+                        }
+                        else
+                        {
+                            cells.Add(new Cell(lastCell.Coordinate.x, lastCell.Coordinate.y - 1, 1));
+                            lastCell = FindCell(new Coordinate(lastCell.Coordinate.x, lastCell.Coordinate.y - 1));
+                        }
+                    }
                     break;
             }
-            if (direction == 1 && localLength % 2 == 1 || direction == 3 && localLength % 2 == 0) 
+            int _dir = direction;
+            if ((direction == 1 && localLength % 2 == 1 && predirection == 4) || (direction == 1 && localLength % 2 == 0 && predirection == 2) || (direction == 3 && localLength % 2 == 0 && predirection == 2) || (direction == 3 && localLength % 2 == 1 && predirection == 4))
             {
                 direction = 2;
-            }else
-            if (direction == 1 && localLength%2 == 0 || direction == 3 && localLength % 2 == 1)
+            }
+            else
+            if ((direction == 1 && localLength % 2 == 0 && predirection == 4) || (direction == 1 && localLength % 2 == 1 && predirection == 2) || (direction == 3 && localLength % 2 == 1 && predirection == 2) || (direction == 3 && localLength % 2 == 0 && predirection == 4))
             {
                 direction = 4;
-            }else
-            if (direction == 2 && localLength%2 == 1 || direction == 4 && localLength % 2 == 1)
+            }
+            else
+            if ((direction == 2 && localLength % 2 == 1 && predirection == 3) || (direction == 2 && localLength % 2 == 0 && predirection == 1) || (direction == 4 && localLength % 2 == 1 && predirection == 3) || (direction == 4 && localLength % 2 == 0 && predirection == 1))
             {
                 direction = 1;
-            }else
-            if (direction == 2 && localLength % 2 == 0 || direction == 4 && localLength % 2 == 0)
+            }
+            else
+            if ((direction == 2 && localLength % 2 == 1 && predirection == 1) || (direction == 2 && localLength % 2 == 0 && predirection == 3) || (direction == 4 && localLength % 2 == 1 && predirection == 1) || (direction == 4 && localLength % 2 == 0 && predirection == 3)) 
             {
                 direction = 3;
             }
+            predirection = _dir;
+            Debug.Log(direction);
         }
     }
     public int DetermineLineLength()

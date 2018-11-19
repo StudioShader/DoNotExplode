@@ -95,6 +95,34 @@ public class Cell {
             else
             {
                 Debug.Log("alert: interseption between two empty cells  " + X + "  " + Y);
+                if (alreadyCell.empty != _empty)
+                {
+                    Debug.Log("ohh, shit. This is realy bad  " + X + "  " + Y);
+                }
+                else
+                {
+                    Debug.Log("nahh, not so bad  " + X + "  " + Y);
+                    alreadyCell.del();
+                    if (_empty == 0)
+                    {
+                        empty = 0;
+                        Coordinate coord = new Coordinate(X, Y);
+                        Coordinate = coord;
+                        cell = null;
+                        Position = new Vector2();
+                        CellController.cells.Add(this);
+                    }
+                    else
+                    {
+                        empty = 1;
+                        Coordinate coord = new Coordinate(X, Y);
+                        Coordinate = coord;
+                        Position = new Vector2(coord.x * CellController.CellSize + CellController.CellSize / 2, coord.y * CellController.CellSize + CellController.CellSize / 2);
+                        cell = PoolScript.instance.GetObjectFromPool("Cell", Position, Quaternion.Euler(0, 0, 0));
+                        cell.transform.parent = CellController.instance.transform;
+                        CellController.cells.Add(this);
+                    }
+                }
             }
         }
         else
