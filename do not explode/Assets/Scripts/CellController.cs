@@ -46,8 +46,13 @@ public class CellController : MonoBehaviour {
 
         preFourth = DetermineFourth();
     }
+    public void SummWhitePathGen()
+    {
+
+    }
     public void WhitePathFirstGen(int n)
     {
+        List<Cell> localcelllist = new List<Cell>();
         int cellCount = 0;
         while(cellCount < n)
         {

@@ -6,6 +6,7 @@ using UnityEngine;
 public class Cell {
     public GameObject cell;
     public int empty;
+    public bool potential = false;
     public Vector2 Position { get; set; }
     public Coordinate Coordinate { get; set; }
 
@@ -35,6 +36,14 @@ public class Cell {
             CellController.cells.Add(this);
         }
     }
+    public Cell(int X, int Y, bool potential)
+    {
+        potential = true;
+        Coordinate coord = new Coordinate(X, Y);
+        empty = -1;
+        Coordinate = coord;
+        Position = new Vector2(coord.x * CellController.CellSize + CellController.CellSize / 2, coord.y * CellController.CellSize + CellController.CellSize / 2);
+    }
     public Cell(int X, int Y)
     {
         Coordinate coord = new Coordinate(X, Y);
@@ -62,7 +71,7 @@ public class Cell {
             CellController.cells.Add(this);
         }
     }
-    public Cell(int X, int Y, int _empty)
+    //public Cell(int X, int Y, int _empty)
     {
         Debug.Log(X + "  " + Y);
         if (CellController.FindCell(new Coordinate(X, Y)) != null)
@@ -98,6 +107,26 @@ public class Cell {
                 if (alreadyCell.empty != _empty)
                 {
                     Debug.Log("ohh, shit. This is realy bad  " + X + "  " + Y);
+                    alreadyCell.del();
+                    if (_empty == 0)
+                    {
+                        empty = 0;
+                        Coordinate coord = new Coordinate(X, Y);
+                        Coordinate = coord;
+                        cell = null;
+                        Position = new Vector2();
+                        CellController.cells.Add(this);
+                    }
+                    else
+                    {
+                        empty = 1;
+                        Coordinate coord = new Coordinate(X, Y);
+                        Coordinate = coord;
+                        Position = new Vector2(coord.x * CellController.CellSize + CellController.CellSize / 2, coord.y * CellController.CellSize + CellController.CellSize / 2);
+                        cell = PoolScript.instance.GetObjectFromPool("Cell", Position, Quaternion.Euler(0, 0, 0));
+                        cell.transform.parent = CellController.instance.transform;
+                        CellController.cells.Add(this);
+                    }
                 }
                 else
                 {
@@ -151,7 +180,10 @@ public class Cell {
     public void del()
     {
         CellController.cells.Remove(CellController.FindCell(Coordinate));
+        if (cell != null)
+        {
         PoolScript.instance.ReturnObjectToPool(cell);
+        }
     }
 }
 
