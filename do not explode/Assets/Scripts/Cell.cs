@@ -6,7 +6,7 @@ using UnityEngine;
 public class Cell {
     public GameObject cell;
     public int empty;
-    public bool potential = false;
+    public bool potential;
     public Vector2 Position { get; set; }
     public Coordinate Coordinate { get; set; }
 
@@ -36,13 +36,31 @@ public class Cell {
             CellController.cells.Add(this);
         }
     }
-    public Cell(int X, int Y, bool potential)
+    public Cell(int X, int Y, bool potential, int _empty)
     {
+        Debug.Log("cell: " + X + "  " + Y + " was insert");
+        empty = _empty;
         potential = true;
         Coordinate coord = new Coordinate(X, Y);
-        empty = -1;
+        //empty = -1;
         Coordinate = coord;
         Position = new Vector2(coord.x * CellController.CellSize + CellController.CellSize / 2, coord.y * CellController.CellSize + CellController.CellSize / 2);
+        CellController.currentLocalList.Add(this);
+        Debug.Log("potent after insertion  " + CellController.FindCell(coord).potential);
+    }
+    public Cell Manifest()
+    {
+        if (potential)
+        {
+            Debug.Log("potentional cell was manifested: " + Coordinate.x + "  " + Coordinate.y);
+            potential = false;
+            return new Cell(Coordinate.x, Coordinate.y, empty);
+        }
+        else
+        {
+            Debug.Log("trying to manifest unpotentional cell:  " + Coordinate.x + "  " + Coordinate.y);
+            return null;
+        }
     }
     public Cell(int X, int Y)
     {
@@ -71,7 +89,7 @@ public class Cell {
             CellController.cells.Add(this);
         }
     }
-    //public Cell(int X, int Y, int _empty)
+    public Cell(int X, int Y, int _empty)
     {
         Debug.Log(X + "  " + Y);
         if (CellController.FindCell(new Coordinate(X, Y)) != null)
@@ -187,43 +205,5 @@ public class Cell {
     }
 }
 
-[System.Serializable]
-public class Coordinate
-{
-    public int x;
-    public int y;
-    public Coordinate(int _x, int _y)
-    {
-        x = _x;
-        y = _y;
-    }
-    public static Coordinate RandomCoordinateToStartPolymino(int n)
-    {
-        bool output = false;
-        int _y = 0;
-        int _x = 0;
-        while (!output) {
-            output = true;
-            _x = Random.Range(0, n);
-            _y = Random.Range(0, n);
-            foreach (Polymino poly in CellController.polyminos)
-            {
-                foreach (Cell cl in poly.cells)
-                {
-                    if (cl.Coordinate.x == _x || cl.Coordinate.y == _y)
-                    {
-                        output = false;
-                    }
-                }
-            }
-        }
-        return new Coordinate(_x, _y);
-    }
-    public bool Equals(Coordinate _coord)
-    {
-        if (_coord == null) return false;
-        if (_coord.x == x && _coord.y == y) return true;
-        return false;
-    }
-}
+
 
