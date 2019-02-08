@@ -33,6 +33,16 @@ public class NCellController : MonoBehaviour {
         CellSize = cell1.GetComponent<BoxCollider2D>().size.x;
         cellWidth = Mathf.FloorToInt(screenWidth / CellSize) + 1;
         cellHeight = Mathf.FloorToInt(screenHeight / CellSize) + 1;
+
+        new NCell(0, 0, false);
+        new NCell(1, 0, true);
+        lastCell = FindCell(new Coordinate(1, 0));
+        startCell = 
+        List<NCell> list = createPath();
+        while (CheckForDistance(startCell, list) || CheckForIntersections(list, list))
+        {
+            list = createPath();
+        }
     }
 
     public void Update()

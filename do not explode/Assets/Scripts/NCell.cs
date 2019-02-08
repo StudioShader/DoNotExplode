@@ -24,6 +24,18 @@ public class NCell {
         cell = PoolScript.instance.GetObjectFromPool("Cell", Position, Quaternion.Euler(0, 0, 0));
         cell.transform.parent = CellController.instance.transform;
     }
+    public Cell Manifest()
+    {
+        if (empty == true)
+        {
+            return new Cell(Coordinate.x, Coordinate.y, );
+        }
+        else
+        {
+            Debug.Log("trying to manifest unpotentional cell:  " + Coordinate.x + "  " + Coordinate.y);
+            return null;
+        }
+    }
 }
 [System.Serializable]
 public class Coordinate
