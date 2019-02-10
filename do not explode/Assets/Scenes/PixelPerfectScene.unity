@@ -287,28 +287,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 924929164}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dabf37a4d0fd54d48ad5fc6fabe5c0ab, type: 3}
+  m_Script: {fileID: 11500000, guid: e462f81eac61db744963f382ba887298, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxPolyminoLength: 10
-  direction: 2
-  predirection: 1
-  density: 0.93
-  plate:
-    x: 10
-    y: 10
-  plate1:
-    x: 0
-    y: 0
-  plate2:
-    x: 0
-    y: 0
-  plate3:
-    x: 0
-    y: 0
-  plate4:
-    x: 0
-    y: 0
+  direction: 1
+  predirection: 2
+  pathLength: 10
+  screenWidth: 0
+  screenHeight: 0
+  cellWidth: 0
+  cellHeight: 0
 --- !u!4 &924929166
 Transform:
   m_ObjectHideFlags: 0

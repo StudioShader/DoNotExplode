@@ -22,16 +22,17 @@ public class NCell {
         Coordinate = coord;
         Position = new Vector2(coord.x * NCellController.CellSize + NCellController.CellSize / 2, coord.y * NCellController.CellSize + NCellController.CellSize / 2);
         cell = PoolScript.instance.GetObjectFromPool("Cell", Position, Quaternion.Euler(0, 0, 0));
-        cell.transform.parent = CellController.instance.transform;
+        cell.transform.parent = NCellController.instance.transform;
     }
-    public Cell Manifest()
+    public NCell Manifest()
     {
-        if (empty == true)
+        if (!empty && cell == null)
         {
-            return new Cell(Coordinate.x, Coordinate.y, );
+            return new NCell(Coordinate.x, Coordinate.y);
         }
         else
         {
+            return this;
             Debug.Log("trying to manifest unpotentional cell:  " + Coordinate.x + "  " + Coordinate.y);
             return null;
         }

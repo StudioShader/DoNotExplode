@@ -6,6 +6,8 @@ public class NCellController : MonoBehaviour {
 
     public static float CellSize { get; set; }
 
+    public static GameObject instance;
+
     private Coordinate playerCoordinate;
 
     private GameObject player;
@@ -16,7 +18,7 @@ public class NCellController : MonoBehaviour {
     [SerializeField]
     int pathLength = 10;
 
-    List<NCell> curPath;
+    List<NCell> curPath = new List<NCell>();
 
     public float screenWidth, screenHeight;
     public int cellWidth, cellHeight;
@@ -24,6 +26,7 @@ public class NCellController : MonoBehaviour {
 
     public void Start()
     {
+        instance = gameObject;
         GameObject virtualScreenQuad = GameObject.Find("Virtual Screen Quad");
         screenHeight = virtualScreenQuad.transform.localScale.y;
         screenWidth = virtualScreenQuad.transform.localScale.x;
@@ -31,18 +34,25 @@ public class NCellController : MonoBehaviour {
         player = GameObject.FindGameObjectWithTag("Player");
         GameObject cell1 = PoolScript.instance.GetObjectFromPool("Cell", Vector3.zero, Quaternion.Euler(0, 0, 0));
         CellSize = cell1.GetComponent<BoxCollider2D>().size.x;
+        PoolScript.instance.ReturnObjectToPool(cell1);
         cellWidth = Mathf.FloorToInt(screenWidth / CellSize) + 1;
         cellHeight = Mathf.FloorToInt(screenHeight / CellSize) + 1;
+        lastCell = new NCell(1, 0, true);
+        startCell = new NCell(0, 0, false);
+        lastCell.Manifest();
+        startCell.Manifest();
 
-        new NCell(0, 0, false);
-        new NCell(1, 0, true);
-        lastCell = FindCell(new Coordinate(1, 0));
-        startCell = 
+        int pDir = direction;
+        int pPreDir = predirection;
+        NCell pLastCell = lastCell;
+
         List<NCell> list = createPath();
-        while (CheckForDistance(startCell, list) || CheckForIntersections(list, list))
+        while (CheckForSelfIntersections(list))
         {
+            CreateClearData(pLastCell, pDir, pPreDir);
             list = createPath();
         }
+        Debug.Log("End of start");
     }
 
     public void Update()
@@ -51,17 +61,28 @@ public class NCellController : MonoBehaviour {
         List<NCell> list = new List<NCell>();
         if (startCell.Coordinate.Equals(playerCoordinate))
         {
+            Debug.Log("A");
+            int pDir = direction;
+            int pPreDir = predirection;
+            NCell pLastCell = lastCell;
             list = createPath();
-            while (CheckForDistance(startCell, list) || CheckForIntersections(list, curPath))
+            //CheckForDistance(startCell, list)
+            while (CheckForIntersections(list, curPath))
             {
+                Debug.Log("b");
+                CreateClearData(pLastCell, pDir, pPreDir);
                 list = createPath();
             }
+            startCell = lastCell;
+            curPath = list;
+            ManifestListOfNCells(curPath);
+            DebugList(curPath);
         }
-        curPath = list;
     }
 
     public List<NCell> createPath()
     {
+        Debug.Log(lastCell.Coordinate.x + " " + lastCell.Coordinate.y);
         List<NCell> currentLocalList = new List<NCell>();
 
         int cellCount = 0;
@@ -296,6 +317,20 @@ public class NCellController : MonoBehaviour {
         }
         return false;
     }
+    public bool CheckForSelfIntersections(List<NCell> list)
+    {
+        for (int i = 0; i < list.Count-1; i++)
+        {
+            for (int j = i + 1; j < list.Count; j++)
+            {
+                if (list[i].Coordinate.Equals(list[j].Coordinate) && list[i].empty != list[j].empty)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     public bool CheckForDistance(NCell startPoint, List<NCell> list)
     {
         for(int i = 0; i < list.Count; i++)
@@ -324,5 +359,25 @@ public class NCellController : MonoBehaviour {
             }
         }
         if (outCell != null) return outCell; else return null;
+    }
+    public void DebugList(List<NCell> list)
+    {
+        foreach (NCell cell in list)
+        {
+            Debug.Log(cell.Coordinate.x + "   " + cell.Coordinate.y + " " + cell.empty);
+        }
+    }
+    void ManifestListOfNCells(List<NCell> list)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            list[i] = list[i].Manifest();
+        }
+    }
+    public void CreateClearData(NCell pLastNCell, int pDir,int pPreDir)
+    {
+        lastCell = pLastNCell;
+        predirection = pPreDir;
+        direction = pDir;
     }
 }
