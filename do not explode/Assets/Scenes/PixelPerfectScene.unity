@@ -292,11 +292,41 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   direction: 1
   predirection: 2
-  pathLength: 10
+  lastCell:
+    cell: {fileID: 0}
+    empty: 0
+    Position: {x: 0, y: 0}
+    Coordinate:
+      x: 0
+      y: 0
+  pathLength: 30
+  curPath: []
   screenWidth: 0
   screenHeight: 0
   cellWidth: 0
   cellHeight: 0
+  auxiliaryList: []
+  startCell:
+    cell: {fileID: 0}
+    empty: 0
+    Position: {x: 0, y: 0}
+    Coordinate:
+      x: 0
+      y: 0
+  curCell:
+    cell: {fileID: 0}
+    empty: 0
+    Position: {x: 0, y: 0}
+    Coordinate:
+      x: 0
+      y: 0
+  preStartCell:
+    cell: {fileID: 0}
+    empty: 0
+    Position: {x: 0, y: 0}
+    Coordinate:
+      x: 0
+      y: 0
 --- !u!4 &924929166
 Transform:
   m_ObjectHideFlags: 0
@@ -455,7 +485,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1759152219}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 25.2, y: 8.8, z: 0}
+  m_LocalPosition: {x: 62.2, y: 19.1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

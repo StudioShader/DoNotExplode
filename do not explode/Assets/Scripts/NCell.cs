@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class NCell {
     public GameObject cell;
     public bool empty;
-    public Vector2 Position { get; set; }
-    public Coordinate Coordinate { get; set; }
+    public Vector2 Position;
+    public Coordinate Coordinate;
     public NCell(int X, int Y, bool _empty)
     {
         empty = _empty;
@@ -35,6 +36,13 @@ public class NCell {
             return this;
             Debug.Log("trying to manifest unpotentional cell:  " + Coordinate.x + "  " + Coordinate.y);
             return null;
+        }
+    }
+    public void Del()
+    {
+        if (cell != null)
+        {
+            PoolScript.instance.ReturnObjectToPool(cell);
         }
     }
 }
