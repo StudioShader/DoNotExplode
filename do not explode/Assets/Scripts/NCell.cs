@@ -15,6 +15,7 @@ public class NCell {
         Coordinate = coord;
         Position = new Vector2(coord.x * NCellController.CellSize + NCellController.CellSize / 2, coord.y * NCellController.CellSize + NCellController.CellSize / 2);
         cell = null;
+        NCellController.cells.Add(this);
     }
     public NCell(int X, int Y)
     {
@@ -24,22 +25,28 @@ public class NCell {
         Position = new Vector2(coord.x * NCellController.CellSize + NCellController.CellSize / 2, coord.y * NCellController.CellSize + NCellController.CellSize / 2);
         cell = PoolScript.instance.GetObjectFromPool("Cell", Position, Quaternion.Euler(0, 0, 0));
         cell.transform.parent = NCellController.instance.transform;
+        NCellController.cells.Add(this);
     }
     public NCell Manifest()
     {
+        if (NCellController.FindCell(Coordinate, NCellController.cells) != null)
+        {
+            NCellController.FindCell(Coordinate, NCellController.cells).Del();
+        }
         if (!empty && cell == null)
         {
+            NCellController.cells.Add(this);
             return new NCell(Coordinate.x, Coordinate.y);
         }
         else
         {
+            NCellController.cells.Add(this);
             return this;
-            Debug.Log("trying to manifest unpotentional cell:  " + Coordinate.x + "  " + Coordinate.y);
-            return null;
         }
     }
     public void Del()
     {
+        CellController.cells.Remove(CellController.FindCell(Coordinate));
         if (cell != null)
         {
             PoolScript.instance.ReturnObjectToPool(cell);

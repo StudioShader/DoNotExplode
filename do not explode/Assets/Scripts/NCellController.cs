@@ -25,12 +25,15 @@ public class NCellController : MonoBehaviour {
     public float screenWidth, screenHeight;
     public int cellWidth, cellHeight;
 
+    public static List<Vector2> pathLengths = new List<Vector2>();
+
     [SerializeField]
     private List<NCell> auxiliaryList = new List<NCell>();
 
+    public static List<NCell> cells = new List<NCell>();
+
     [SerializeField]
     public NCell startCell, curCell, preStartCell;
-
     public void Start()
     {
         instance = gameObject;
@@ -46,22 +49,30 @@ public class NCellController : MonoBehaviour {
         cellHeight = Mathf.FloorToInt(screenHeight / CellSize) + 1;
         preStartCell = new NCell(1, 0, true);
         lastCell = new NCell(0, 0, false);
+        cells.Add(lastCell);
+        cells.Add(preStartCell);
         lastCell.Manifest();
         preStartCell.Manifest();
+
+        pathLengths.Add(new Vector2(lastCell.Position.x + CellSize/2, lastCell.Position.y));
 
         int pDir = direction;
         int pPreDir = predirection;
         NCell pLastCell = lastCell;
-        curPath = createPath();
 
+        int localLengthsCount = pathLengths.Count;
+        
+        curPath = createPath();
         while (CheckForSelfIntersections(curPath) || CheckForDistanceBetweenCells(preStartCell, startCell))
         {
+            //Debug.Log("pathLENGTH  " + pathLengths.Count);
+            RefreshLengths(localLengthsCount);
             CreateClearData(pLastCell, pDir, pPreDir);
             curPath = createPath();
         }
+        //Debug.Log("first " + pathLengths[0]);
         ManifestListOfNCells(curPath);
         curPath.Add(preStartCell);
-        Debug.Log(Mathf.Abs(5 - 10));
     }
 
     public void Update()
@@ -76,14 +87,19 @@ public class NCellController : MonoBehaviour {
             int pDir = direction;
             int pPreDir = predirection;
             NCell pLastCell = lastCell;
+            int localLengthsCount = pathLengths.Count;
             list = createPath();
             //CheckForDistance(startCell, list)   || CheckForDistanceBetweenCells(preStartCell, startCell)     || CheckForDistance(preStartCell, list)
             while (CheckForIntersections(list, curPath) || CheckForSelfIntersections(list) || CheckForDistanceBetweenCells(preStartCell, startCell) || CheckForDistance(preStartCell, list))
             {
-                //Debug.Log("b");
+                //Debug.Log("bSSEECC  " + localLengthsCount);
+                RefreshLengths(localLengthsCount);
                 CreateClearData(pLastCell, pDir, pPreDir);
                 list = createPath();
             }
+
+            //Debug.Log("second " + pathLengths[0]);
+
             //startCell = lastCell;
             preStartCell = _startCell;
             auxiliaryList = curPath;
@@ -320,6 +336,8 @@ public class NCellController : MonoBehaviour {
             {
                 startCell = FindCell(new Coordinate(lastCell.Coordinate.x, lastCell.Coordinate.y - 1), currentLocalList);
             }
+            //Debug.Log("added: " + lastCell.Position + "   " + startCell.Position);
+            pathLengths.Add((lastCell.Position + startCell.Position) / 2);
         }
         return currentLocalList;
     }
@@ -410,5 +428,14 @@ public class NCellController : MonoBehaviour {
             return true;
         }
         return false;
+    }
+    public void RefreshLengths(int count)
+    {
+        int c = pathLengths.Count;
+        for (int i = count; i < c; i++)
+        {
+            //Debug.Log("NULLL " + pathLengths[count]);
+            pathLengths.RemoveAt(count);
+        }
     }
 }
