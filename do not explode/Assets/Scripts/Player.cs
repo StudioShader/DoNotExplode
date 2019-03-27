@@ -5,8 +5,8 @@ using UnityEngine;
 public class Player : MonoBehaviour {
     public float velocity = 1;
     public float a = 1, bigA = 5, bigVelocity = 300;
-    public int k = 100;
-    public float energy = 0, energyIncrement = 1, radiusOfExplosion, energyTime;
+    public int radiusIncrement = 100;
+    public float energy = 0, energyIncrement = 1, radiusOfExplosion, maxEnergy = 100;
     private bool preButton;
     public GameObject radius;
     public void Start()
@@ -16,7 +16,7 @@ public class Player : MonoBehaviour {
     public void Update()
     {
         if (energy != 0)
-            radius.transform.localScale = new Vector3(1, 1, 1) * energy * k / 16;
+            radius.transform.localScale = new Vector3(1, 1, 1) * energy * radiusIncrement / 16;
         else
             radius.transform.localScale = new Vector3(1, 1, 1);
         Vector2 myPos = new Vector2(transform.position.x, transform.position.y);
@@ -32,7 +32,7 @@ public class Player : MonoBehaviour {
             Vector2 pos = NCellController.pathLengths[0] + (deltaLength * (NCellController.pathLengths[1] - NCellController.pathLengths[0]).normalized);
             transform.position = new Vector3(pos.x, pos.y, transform.position.z);
         }
-        Debug.Log(velocity);
+        //Debug.Log(velocity);
         if (velocity >= a * Time.deltaTime) {
             velocity -= a * Time.deltaTime;
         }
@@ -40,7 +40,7 @@ public class Player : MonoBehaviour {
         {
             velocity -= bigA * Time.deltaTime;
         }
-        Debug.Log(a * Time.deltaTime);
+        //Debug.Log(a * Time.deltaTime);
         if (velocity <= 0)
         {
             die();
@@ -48,7 +48,11 @@ public class Player : MonoBehaviour {
         if (Input.GetKey("c"))
         {
             preButton = true;
-            energy += energyIncrement;
+            energy += energyIncrement * Time.deltaTime;
+            if (energy >= maxEnergy)
+            {
+                Blow();
+            }
         }
         else
         {
@@ -70,8 +74,18 @@ public class Player : MonoBehaviour {
         CalculateRadius();
         if ((NCellController.pathLengths[1] - myPos).magnitude < radiusOfExplosion || (NCellController.pathLengths[0] - myPos).magnitude < radiusOfExplosion)
         {
-            velocity += energy * c;
-            Debug.Log(velocity + "  " + energy + "  " + c + " vvvvvvvvvvvvvvvvvvvvvvvvvvv");
+            float x;
+            if ((NCellController.pathLengths[1] - myPos).magnitude < (NCellController.pathLengths[0] - myPos).magnitude)
+            {
+                x = 0.5f + 1.5f * (radiusOfExplosion - (NCellController.pathLengths[1] - myPos).magnitude) / radiusOfExplosion;
+                velocity += energy * c;
+            }
+            else
+            {
+                x = 0.5f + 1.5f * (radiusOfExplosion - (NCellController.pathLengths[0] - myPos).magnitude) / radiusOfExplosion;
+                velocity += energy * c;
+            }
+            //Debug.Log(velocity + "  " + energy + "  " + c + " vvvvvvvvvvvvvvvvvvvvvvvvvvv");
         }
         else
         {
@@ -81,7 +95,7 @@ public class Player : MonoBehaviour {
     }
     public void CalculateRadius()
     {
-        radiusOfExplosion = energy * k;
+        radiusOfExplosion = energy * radiusIncrement;
     }
     public void die()
     {

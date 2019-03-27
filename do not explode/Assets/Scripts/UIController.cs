@@ -23,7 +23,7 @@ public class UIController : MonoBehaviour {
     {
         for(int i = 0; i < list.Count; i++)
         {
-            float c = GetComponentInChildren<Slider>().value;
+            float c = list[i].GetComponentInChildren<Slider>().value;
             list[i].GetComponentInChildren<Text>().text = listOfNames[i] + " " + c.ToString();
         }
     }

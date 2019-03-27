@@ -99,7 +99,6 @@ public class NCellController : MonoBehaviour {
             }
 
             //Debug.Log("second " + pathLengths[0]);
-
             //startCell = lastCell;
             preStartCell = _startCell;
             auxiliaryList = curPath;
